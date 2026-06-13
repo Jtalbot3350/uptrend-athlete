@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0E1C26">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="UpTrend">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>UpTrend Athlete — Sprint · Throw · Vert · Growth Tracker</title>
+<style>
+  :root{
+    --bg:#0E1C26; --panel:#13283440; --panel:#142734; --panel2:#1A3343; --line:#244456;
+    --ink:#EAF4FA; --ink-dim:#86A6BA;
+    --navy:#134A67; --brand:#5BAEDC; --brand-lt:#8CC9E8;
+    --track:#5BAEDC;      /* primary accent = brand mid-blue */
+    --start:#3FD17F; --finish:#FF6B57; --gold:#F4B740; --blue:#8CC9E8;
+    --mono:"JetBrains Mono","SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+    --sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{height:100%}
+  body{min-height:100%}
+  body{background:linear-gradient(180deg,rgba(14,28,38,.86),rgba(14,28,38,.94) 45%,rgba(14,28,38,.985)),url('data:image/jpeg;base64,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XASRuRJG4omKKAqKoAAgqKAKCKAACoAAAAAAAKAAAAAAAAgAKACACAAAJqWgqalqWguprNqag1azalrNoLazalrFoLazalrNqC6mpamg1qazpqDWmoIKIpQASolRRKIKAhiiCYKgAACooAAoAAAAmKIJhigJhigMjRgMqUgKAAACBRQNADVRQExQEwUBVZ01RpE00FE1NBrU1AFEABAFEAURAaGTQaGdNBRAF1BAAAAAURUFEUAABUAUQBrTWQGtNZFF0QFUQBRAFEAURQAAFRQVUUAXFxRFiyLIKSNSEjUiiSNSLIsgJjUi4sgJiyLi4omLigAooAAAKKIKiiKACAogCggKIKKgAAAAAKgCgCAAAAAamoKialoLprOpoN6ms+k9IN6ms+mbQbtZtZ9JegW1m1LWbQatS1jUtQatYtLWbQW1m1NEBASgqCCgILFQBUVEAAABBUUBBUARUECBAUBVAAAAAAAEAAAAEqLUBVZWAoAIKigKAigAAAACAKAgAAAAAAAAAACItQAAAAAAAAAAABAABRFABQQVFAAAAVRADQAAAFRQAUEUwxQFwwBZFkXATFkXGpASRZGpGpFVnFkaxcUSRZFkWQCRZFxcAxYCgqKAAqKIooAICCiiAKIAogoohoKJpoKIAoigAAAgiiAKahqC6JqaDWms6aC2pazazag1azazemb0DfpPTnek9A6ej05ej0g6ektY9J6Bv0l6Y9JqDVrNqamgupaagFqCIACAKIIKAAICsiDSCAqsqCgAoACAAgACCjQigAAAAJogLogC6aggums6aoqACqkAaEigAAAAAAAAAAiKiggCAKKAoCNYYDIoCAAlRagAAAAAAAAACAAAAAsRVFAFAAQAAAAVcBEawxRkXFwExcWRZATDGsXAZxcaxcVWMXG8XAZkWRqctSAxjUjWLgJIuLI1ijOLi4YoYpigKAAAACgAIKhqihqAogAAoAAAAAAAACAjQigogACIKiamgums6mg3qazqWoNWpaxektEatZtZvTNqC2s2s2s2itWprOpqDemsaA3qayINampqaDWjKgqAgAAAqBhigIKiCVFqIAICiAKIoKIINCIouiAAAACguoAumoAqAAAAAAioCAAAAqooLFSKAAAAACACAKIAAioAAKiwVVIoAAIjTIIKgIjSAgqAAAKAIKAgCACgAKoqKAAAioAA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');background-size:cover;background-position:center top;background-attachment:fixed;background-color:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;
+       padding:12px 12px calc(120px + env(safe-area-inset-bottom));max-width:1100px;margin:0 auto}
+
+  header{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding-bottom:10px;margin-bottom:12px;
+         border-bottom:3px solid var(--brand);position:relative;background:linear-gradient(180deg,rgba(14,28,38,.6),transparent);margin-top:-12px;padding-top:14px}
+  header::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:2px;
+    background:repeating-linear-gradient(90deg,var(--lane,#F2F0EA) 0 26px,transparent 26px 40px);opacity:.3}
+  header h1{font-size:19px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+  header h1 span{color:var(--track)}
+  header .sub{color:var(--ink-dim);font-size:12px}
+
+  /* ---------- nav ---------- */
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(16,30,40,.93);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      border-top:1px solid var(--line);display:flex;justify-content:space-around;
+      padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  nav button{flex:1;max-width:140px;background:none;border:none;color:var(--ink-dim);
+      font-family:var(--sans);font-size:11px;font-weight:600;padding:6px 2px;cursor:pointer;
+      display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:8px}
+  nav button .ic{font-size:20px;line-height:1}
+  nav button.active{color:var(--track)}
+  nav button:focus-visible{outline:2px solid var(--track)}
+
+  .view{display:none}
+  .view.active{display:block}
+
+  /* ---------- shared ---------- */
+  .card{background:rgba(20,39,52,.84);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+  .card h2{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);
+           margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .card h2::before{content:"";width:8px;height:8px;background:var(--track);border-radius:2px;flex:0 0 auto}
+  button.btn{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink);background:var(--panel2);
+      border:1px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer;min-height:42px}
+  button.btn:hover{background:#2B2F38}
+  button.btn:focus-visible{outline:2px solid var(--track);outline-offset:2px}
+  button.btn:disabled{opacity:.4}
+  .btn.primary{border-color:var(--track);color:var(--track)}
+  .btn.green{border-color:var(--start);color:var(--start)}
+  .btn.red{border-color:var(--finish);color:var(--finish)}
+  .btn.full{width:100%}
+  .btn.small{font-size:12px;padding:6px 10px;min-height:32px}
+  .field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+  .field label{font-size:12.5px;color:var(--ink-dim)}
+  .row{display:flex;gap:8px}
+  .row > *{flex:1;min-width:0}
+  input,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);
+      font-family:var(--mono);font-size:15px;padding:10px;min-height:42px}
+  input[type=date]{font-family:var(--sans)}
+  select{font-family:var(--sans)}
+  input:focus,select:focus{outline:2px solid var(--track);outline-offset:1px;border-color:var(--track)}
+  input[type=file]{display:none}
+  .muted{color:var(--ink-dim);font-size:12px}
+  .warn{color:var(--gold);font-size:12.5px;margin-top:8px;display:none}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--panel2);
+        border:1px solid var(--line);border-radius:99px;padding:2px 9px;color:var(--ink-dim)}
+
+  /* ---------- roster ---------- */
+  .athlete-item{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);
+      border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;cursor:pointer}
+  .athlete-item:hover{background:var(--panel2)}
+  .athlete-item .avatar{width:42px;height:42px;border-radius:50%;background:var(--track);color:#101216;
+      display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;flex:0 0 auto}
+  .athlete-item .nm{font-weight:700;font-size:15px}
+  .athlete-item .meta{font-size:12px;color:var(--ink-dim);font-family:var(--mono)}
+  .athlete-item .chev{margin-left:auto;color:var(--ink-dim)}
+
+  /* ---------- profile ---------- */
+  .prof-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .avatar{overflow:hidden;flex:0 0 auto}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .prof-head .avatar{width:64px;height:64px;border-radius:50%;background:var(--track);color:#101216;
+      display:flex;align-items:center;justify-content:center;font-weight:800;font-size:23px}
+  .prof-head h3{font-size:20px}
+  .statline{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;text-align:center;min-width:74px}
+  .stat .v{font-family:var(--mono);font-size:15px;font-weight:700}
+  .stat .l{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);text-align:left;
+     padding:6px 6px;border-bottom:1px solid var(--line)}
+  td{padding:7px 6px;border-bottom:1px solid #282C34;font-family:var(--mono);font-size:12.5px}
+  td.del{width:30px;text-align:center;color:var(--finish);cursor:pointer;font-family:var(--sans)}
+  .chart-box{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:10px}
+  .chart-box .ct{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);
+      margin:2px 0 6px 4px}
+  canvas.chart{width:100%;height:150px;display:block}
+
+  /* ---------- video stage ---------- */
+  .stage{position:relative;background:#000;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);min-height:200px}
+  .stage video{display:block;width:100%;height:auto;max-height:56vh;background:#000}
+  .drop-hint{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px;align-items:center;
+      justify-content:center;color:var(--ink-dim);font-size:13px;text-align:center;padding:18px}
+  .drop-hint strong{color:var(--ink);font-size:15px}
+  .drop-hint.hidden{display:none}
+  .marker-line{position:absolute;top:0;bottom:0;width:44px;margin-left:-22px;cursor:ew-resize;touch-action:none;display:none}
+  .marker-line .bar{position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px}
+  .marker-line .tag{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-family:var(--mono);
+      font-size:10px;font-weight:700;color:#101216;padding:2px 7px;border-radius:4px;white-space:nowrap;user-select:none}
+  #lineA .bar{background:var(--start);box-shadow:0 0 8px rgba(63,209,127,.7)} #lineA .tag{background:var(--start)}
+  #lineB .bar{background:var(--finish);box-shadow:0 0 8px rgba(255,90,60,.7)} #lineB .tag{background:var(--finish)}
+  .frame-badge{position:absolute;right:8px;bottom:8px;display:none;font-family:var(--mono);font-size:11px;
+      background:rgba(0,0,0,.72);border:1px solid var(--line);padding:4px 8px;border-radius:6px;pointer-events:none}
+  .transport{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px;
+      display:flex;flex-direction:column;gap:9px;margin-top:10px}
+  .scrub{width:100%;accent-color:var(--track);min-height:30px}
+  .t-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  .t-row .btn{flex:1;min-width:54px;padding:10px 6px}
+  .mode-tabs{display:flex;gap:6px;margin-bottom:12px}
+  .mode-tabs .btn{flex:1}
+  .mode-tabs .btn.on{background:var(--track);border-color:var(--track);color:#101216}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .presets .btn{font-size:12px;padding:6px 10px;min-height:34px;border-radius:99px}
+
+  /* ---------- results board ---------- */
+  .board{background:#101216;border:1px solid var(--line);border-radius:var(--radius);padding:14px 12px;
+      text-align:center;position:relative;overflow:hidden;margin-top:10px}
+  .board::before{content:"";position:absolute;top:0;left:0;right:0;height:8px;
+      background:repeating-conic-gradient(#fff 0 25%, #0E1C26 0 50%) 0 0/16px 8px;opacity:.85}
+  .board .time{font-family:var(--mono);font-weight:700;font-size:38px;line-height:1.05;margin-top:8px;font-variant-numeric:tabular-nums}
+  .board .time small{font-size:16px;color:var(--ink-dim);font-weight:500}
+  .board .speed-main{font-family:var(--mono);font-size:20px;color:var(--track);font-weight:700;margin-top:5px}
+  .board .speed-sub{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);
+      font-size:12px;color:var(--ink-dim);margin-top:7px}
+  .board .frames-note{font-size:10.5px;color:var(--ink-dim);margin-top:9px}
+  .board.idle .time{color:#3A3F49}
+
+  /* ---------- height tool ---------- */
+  .photo-stage{position:relative;background:#000;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);min-height:200px}
+  .photo-stage img{display:block;width:100%;height:auto;max-height:64vh;object-fit:contain}
+  .hline{position:absolute;left:0;right:0;height:40px;margin-top:-20px;cursor:ns-resize;touch-action:none;display:none}
+  .hline .bar{position:absolute;top:50%;left:0;right:0;height:3px;margin-top:-1.5px}
+  .hline .tag{position:absolute;top:50%;left:8px;transform:translateY(-130%);font-family:var(--mono);font-size:10px;
+      font-weight:700;color:#101216;padding:2px 7px;border-radius:4px;user-select:none}
+  #hFloor .bar{background:#fff;box-shadow:0 0 8px rgba(255,255,255,.6)} #hFloor .tag{background:#fff}
+  #hRef .bar{background:var(--gold);box-shadow:0 0 8px rgba(255,199,102,.6)} #hRef .tag{background:var(--gold)}
+  #hHead .bar{background:var(--blue);box-shadow:0 0 8px rgba(90,167,232,.6)} #hHead .tag{background:var(--blue)}
+  .ht-result{font-family:var(--mono);font-size:26px;font-weight:700;text-align:center;padding:8px 0 2px}
+  .ht-result small{font-size:13px;color:var(--ink-dim)}
+
+  /* ---------- print report ---------- */
+  #reportView{display:none}
+  @media print{
+    @page{margin:14mm}
+    body{background:#fff;color:#111;padding:0;max-width:none}
+    body > *:not(#reportView){display:none !important}
+    #reportView{display:block !important}
+    .rep-card{border:1px solid #bbb;break-inside:avoid}
+  }
+  #reportView{background:#fff;color:#111;padding:18px;border-radius:var(--radius)}
+  #reportView h1{font-size:22px;border-bottom:3px solid var(--track);padding-bottom:6px;margin-bottom:4px}
+  #reportView .rep-sub{font-size:12px;color:#555;margin-bottom:14px}
+  .rep-card{border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:12px}
+  .rep-card h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#666;margin-bottom:8px}
+  #reportView table{font-size:12px}
+  #reportView th{color:#666;border-bottom:1px solid #ccc}
+  #reportView td{border-bottom:1px solid #eee;color:#111;font-family:var(--mono)}
+  #reportView .stat{background:#f6f5f2;border-color:#ddd}
+  #reportView .stat .v{color:#111}
+  #reportView canvas.chart{height:170px}
+  .no-print{margin-bottom:12px;display:flex;gap:8px}
+  @media print{.no-print{display:none !important}}
+</style>
+</head>
+<body>
+
+<header>
+  <img id="appLogo" src="logo.png" alt="" style="height:40px;align-self:center;filter:drop-shadow(0 0 1px rgba(140,201,232,.4))" onerror="this.remove()">
+  <h1>UpTrend<span>Athlete</span></h1>
+  <div class="sub">UpTrendAthlete.com — sprint · throw · vert · growth tracking</div>
+</header>
+
+<!-- ==================== ATHLETES / ROSTER ==================== -->
+<div class="view active" id="view-roster">
+  <div class="card" id="accountCard">
+    <h2>Account &amp; cloud backup</h2>
+    <div id="acctLoggedOut">
+      <div class="muted" id="cloudNote" style="margin-bottom:10px">Create a free account to back up your roster to the cloud — then you can sign in on any phone or computer and your athletes, results, photos and reports come back. If you lose your device, nothing is lost.</div>
+      <div class="row">
+        <div class="field"><label>Email</label><input id="acctEmail" type="email" autocomplete="email" placeholder="you@email.com"></div>
+        <div class="field"><label>Password</label><input id="acctPass" type="password" autocomplete="current-password" placeholder="8+ characters"></div>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="loginBtn">Log in</button>
+        <button class="btn" id="signupBtn">Create account</button>
+      </div>
+      <div class="muted" id="acctMsg" style="margin-top:8px"></div>
+    </div>
+    <div id="acctLoggedIn" style="display:none">
+      <div class="muted">Signed in as <b id="acctWho"></b> · plan <span class="pill" id="tierPill">free</span></div>
+      <div class="row" style="margin-top:10px">
+        <div class="field"><label>Facility / Team name</label><input id="teamName" placeholder="e.g. Phoenix Speed Academy"></div>
+        <div class="field"><label>Location (City, ST)</label><input id="teamLoc" placeholder="Phoenix, AZ"></div>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="saveTeam">Save team info</button>
+        <button class="btn" id="restoreBtn">↻ Restore from cloud</button>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </div>
+      <div class="muted" id="syncStatus" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Add athlete</h2>
+    <div class="row">
+      <div class="field"><label>Name</label><input id="newName" placeholder="First Last"></div>
+      <div class="field" style="max-width:160px"><label>Birthdate</label><input type="date" id="newDob"></div>
+    </div>
+    <button class="btn primary full" id="addAthlete">＋ Add to roster</button>
+  </div>
+  <div id="rosterList"></div>
+  <div class="card">
+    <h2>Backup</h2>
+    <div class="row">
+      <button class="btn" id="exportBtn">⬇ Export data (JSON)</button>
+      <button class="btn" id="importBtn">⬆ Import data</button>
+      <input type="file" id="importFile" accept=".json,application/json">
+    </div>
+    <div class="muted" style="margin-top:8px">Data saves automatically on this device. Export a JSON backup regularly — it's also how you move the roster to another phone.</div>
+  </div>
+</div>
+
+<!-- ==================== PROFILE ==================== -->
+<div class="view" id="view-profile">
+  <button class="btn small" id="backToRoster">‹ Roster</button>
+  <div class="card" style="margin-top:10px">
+    <div class="prof-head">
+      <div class="avatar" id="pAvatar">A</div>
+      <div>
+        <h3 id="pName">Athlete</h3>
+        <div class="muted" id="pMeta">—</div>
+        <div class="statline">
+          <div class="stat"><div class="v" id="pAge">—</div><div class="l">Age</div></div>
+          <div class="stat"><div class="v" id="pHt">—</div><div class="l">Height</div></div>
+          <div class="stat"><div class="v" id="pWt">—</div><div class="l">Weight</div></div>
+          <div class="stat"><div class="v" id="pVert">—</div><div class="l">Vert</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" id="printBtn">🖨 Print / PDF report</button>
+      <button class="btn" id="pPhotoBtn">📷 Update photo</button>
+      <input type="file" id="pPhotoInput" accept="image/*" capture="environment">
+      <button class="btn red" id="deleteAthlete">Delete athlete</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Log height &amp; weight</h2>
+    <div class="row">
+      <div class="field"><label>Date</label><input type="date" id="mDate"></div>
+      <div class="field"><label>Height (in)</label><input type="number" id="mHt" step="0.1" inputmode="decimal" placeholder="e.g. 58.5"></div>
+      <div class="field"><label>Weight (lb)</label><input type="number" id="mWt" step="0.1" inputmode="decimal" placeholder="e.g. 92"></div>
+    </div>
+    <button class="btn green full" id="addMeas">＋ Save measurement</button>
+    <div class="muted" style="margin-top:6px">Tip: use the 📏 Height tab to measure height from a photo — it fills this in automatically.</div>
+  </div>
+
+  <div class="card"><h2>Growth charts</h2>
+    <div class="chart-box"><div class="ct">Height (in)</div><canvas class="chart" id="chHt"></canvas></div>
+    <div class="chart-box"><div class="ct">Weight (lb)</div><canvas class="chart" id="chWt"></canvas></div>
+    <div class="chart-box"><div class="ct">Vertical leap (in)</div><canvas class="chart" id="chVert"></canvas></div>
+  </div>
+
+  <div class="card"><h2>Speed charts</h2><div id="speedCharts"><div class="muted">No timed results yet.</div></div></div>
+
+  <div class="card"><h2>Measurement history</h2>
+    <table><thead><tr><th>Date</th><th>Height</th><th>Weight</th><th></th></tr></thead><tbody id="measTable"></tbody></table>
+  </div>
+  <div class="card"><h2>Sprint results</h2>
+    <table><thead><tr><th>Date</th><th>Event</th><th>Time</th><th>mph</th><th></th></tr></thead><tbody id="sprintTable"></tbody></table>
+  </div>
+  <div class="card"><h2>Throw results</h2>
+    <table><thead><tr><th>Date</th><th>Dist</th><th>Time</th><th>Ball mph</th><th></th></tr></thead><tbody id="throwTable"></tbody></table>
+  </div>
+  <div class="card"><h2>Vertical leap</h2>
+    <table><thead><tr><th>Date</th><th>Reach</th><th>Touch</th><th>Vert</th><th></th></tr></thead><tbody id="vertTable"></tbody></table>
+  </div>
+</div>
+
+<!-- ==================== TIMER (sprint + throw) ==================== -->
+<div class="view" id="view-timer">
+  <div class="mode-tabs">
+    <button class="btn on" id="modeSprint">🏃 Sprint</button>
+    <button class="btn" id="modeThrow">⚾ Throw</button>
+  </div>
+
+  <div class="card">
+    <h2>Setup</h2>
+    <div class="mode-tabs">
+      <button class="btn on" id="srcFile">📁 Video file</button>
+      <button class="btn" id="srcLive">🔴 Live camera</button>
+    </div>
+    <div class="row">
+      <div class="field"><label>Athlete</label><select id="timerAthlete"></select></div>
+      <div class="field" style="max-width:130px"><label>Date</label><input type="date" id="timerDate"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Video</label><button class="btn primary full" id="vidBtn">🎥 Load / record video</button>
+        <input type="file" id="vidInput" accept="video/*" capture="environment"></div>
+      <div class="field" style="max-width:170px"><label>Frame rate (fps)</label>
+        <div class="row"><input type="number" id="fps" value="30" min="1" max="1000" step="0.001" inputmode="decimal">
+        <button class="btn small" id="detectFps" style="flex:0 0 auto">Auto</button></div></div>
+    </div>
+    <div class="field"><label>Distance between lines (A → B)</label>
+      <div class="row">
+        <input type="number" id="dist" value="40" min="0.01" step="0.01" inputmode="decimal">
+        <select id="unit" style="max-width:110px">
+          <option value="yd">yards</option><option value="m">meters</option><option value="ft" >feet</option>
+        </select>
+      </div>
+      <div class="presets" id="presetRow"></div>
+    </div>
+  </div>
+
+  <div class="stage" id="stage">
+    <video id="video" playsinline muted preload="auto"></video>
+    <div class="drop-hint" id="dropHint">
+      <strong>Load or record a video</strong>
+      <span>Film from the side, square to the lane.<br>Higher fps (slo-mo) = more accurate times.</span>
+    </div>
+    <div class="marker-line" id="lineA"><div class="bar"></div><div class="tag">A · START</div></div>
+    <div class="marker-line" id="lineB"><div class="bar"></div><div class="tag">B · FINISH</div></div>
+    <div class="frame-badge" id="frameBadge">frame 0 · 0.000 s</div>
+  </div>
+
+  <div class="transport">
+    <input type="range" class="scrub" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Scrub video">
+    <div class="t-row">
+      <button class="btn" id="back10">«10</button><button class="btn" id="back1">‹1</button>
+      <button class="btn" id="playBtn">▶</button>
+      <button class="btn" id="fwd1">1›</button><button class="btn" id="fwd10">10»</button>
+      <button class="btn" id="slowBtn">0.25×</button>
+    </div>
+    <div class="t-row">
+      <button class="btn green" id="markA">⏱ Mark A — first movement</button>
+      <button class="btn red" id="markB">🏁 Mark B — crosses line</button>
+    </div>
+    <div class="t-row">
+      <button class="btn" id="autoA">🔍 Auto-find start (A)</button>
+      <button class="btn" id="autoB">🔍 Auto-find finish (B)</button>
+    </div>
+    <div class="t-row" style="justify-content:space-between;align-items:center">
+      <button class="pill" id="chipA" style="cursor:pointer;border:1px solid var(--start)">A: not set</button>
+      <button class="pill" id="chipB" style="cursor:pointer;border:1px solid var(--finish)">B: not set</button>
+      <button class="btn small" id="clearMarks">Clear marks</button>
+    </div>
+    <div class="muted" style="text-align:center">
+      The clock only counts frames between A and B — where the video starts doesn't matter.<br>
+      <b>A</b> = frame the runner first moves (front foot / first twitch). <b>B</b> = frame their torso reaches the finish line.<br>
+      Auto-find scans forward from wherever you're parked: park just before the start for A, just before the line for B.
+    </div>
+  </div>
+
+  <div class="card" id="livePanel" style="display:none;margin-top:10px">
+    <h2>Live timing</h2>
+    <div class="muted">Drag the green line onto the start mark and the red line onto the finish.
+      Hit <b>ARM</b>, keep the scene still for a second while it calibrates, then send the runner.
+      Clock starts on first movement at the green line and stops when they reach the red line.
+      The run records automatically so you can verify it frame-by-frame afterward.</div>
+    <div class="ht-result" id="liveClock" style="font-size:42px">0.00</div>
+    <div class="muted" id="liveStatus" style="text-align:center">camera off</div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn green" id="armBtn">🎯 ARM</button>
+      <button class="btn" id="liveCancel">Cancel</button>
+    </div>
+    <button class="btn full" id="reviewBtn" style="margin-top:8px;display:none">🎞 Review recording frame-by-frame</button>
+  </div>
+
+  <div class="board idle" id="board">
+    <div class="time" id="timeOut">0.000<small> s</small></div>
+    <div class="speed-main" id="speedMain">— mph</div>
+    <div class="speed-sub"><span id="ms">— m/s</span><span id="kmh">— km/h</span><span id="pace">— /mi</span></div>
+    <div class="frames-note" id="framesNote">Mark frame A and frame B to get a result</div>
+    <div class="warn" id="warnMsg"></div>
+  </div>
+  <button class="btn primary full" id="saveResult" style="margin-top:10px" disabled>💾 Save result to athlete</button>
+</div>
+
+<!-- ==================== HEIGHT FROM PHOTO ==================== -->
+<div class="view" id="view-height">
+  <div class="mode-tabs">
+    <button class="btn on" id="hmHeight">📏 Height</button>
+    <button class="btn" id="hmVert">🦘 Vertical leap</button>
+  </div>
+  <div class="card">
+    <h2 id="hToolTitle">Height from photo</h2>
+    <div class="muted" style="margin-bottom:10px" id="hInstrHeight">
+      Stand the athlete flat against the wall with the reference mark (e.g. your 7&prime; line).
+      Shoot from 10–15 ft back, camera level, about chest height. Drag the three lines:
+      <b style="color:#fff">FLOOR</b>, <b style="color:var(--gold)">REF MARK</b>, <b style="color:var(--blue)">TOP OF HEAD</b>.
+    </div>
+    <div class="muted" style="margin-bottom:10px;display:none" id="hInstrVert">
+      Mark the wall in inches up to 10&prime; (your ref mark can be any height — just enter what it is, e.g. 10&prime;0&quot;).
+      <b>Step 1:</b> athlete stands flat-footed, arm straight up — photo, drag FINGERTIP to the fingertips, tap <b>Set standing reach</b>.
+      <b>Step 2:</b> athlete jumps and touches as high as they can — load a <b>video</b> of the jump (slo-mo is best), scrub to the peak, drag FINGERTIP to the hand, tap <b>Set jump touch</b>.
+      Vertical = touch − reach. Recalibrate FLOOR/REF on each new photo or video.
+    </div>
+    <div class="row">
+      <div class="field"><label>Athlete</label><select id="htAthlete"></select></div>
+      <div class="field" style="max-width:130px"><label>Date</label><input type="date" id="htDate"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Photo</label><button class="btn primary full" id="photoBtn">📸 Take / load photo</button>
+        <input type="file" id="photoInput" accept="image/*,video/*" capture="environment"></div>
+      <div class="field" style="max-width:190px"><label>Ref mark height above floor</label>
+        <div class="row"><input type="number" id="refFt" value="7" min="0" step="1" inputmode="numeric" placeholder="ft">
+          <input type="number" id="refIn" value="0" min="0" max="11.9" step="0.5" inputmode="decimal" placeholder="in"></div></div>
+    </div>
+  </div>
+
+  <div class="photo-stage" id="photoStage">
+    <img id="photo" alt="">
+    <video id="photoVid" playsinline muted preload="auto" style="display:none;width:100%;height:auto;max-height:64vh"></video>
+    <div class="drop-hint" id="photoHint"><strong>Load a photo to begin</strong></div>
+    <div class="hline" id="hFloor"><div class="bar"></div><div class="tag">FLOOR</div></div>
+    <div class="hline" id="hRef"><div class="bar"></div><div class="tag">REF MARK</div></div>
+    <div class="hline" id="hHead"><div class="bar"></div><div class="tag">TOP OF HEAD</div></div>
+  </div>
+
+  <div class="card" id="vidScrubCard" style="display:none;margin-top:10px">
+    <div class="row">
+      <button class="btn" id="pvBack">‹ frame</button>
+      <input type="range" id="pvScrub" min="0" max="1000" step="1" style="flex:3;accent-color:var(--track)">
+      <button class="btn" id="pvFwd">frame ›</button>
+    </div>
+    <div class="muted" style="text-align:center;margin-top:4px">Scrub to the very top of the jump, then drag FINGERTIP to the hand</div>
+  </div>
+
+  <div class="card" style="margin-top:10px">
+    <div class="ht-result" id="htResult">—</div>
+    <div id="heightControls">
+      <div class="row" style="margin-top:8px">
+        <div class="field"><label>Weight today (lb) — optional</label>
+          <input type="number" id="htWt" step="0.1" inputmode="decimal" placeholder="from the scale"></div>
+      </div>
+      <button class="btn green full" id="saveHeight" disabled>💾 Save height + weight to athlete</button>
+    </div>
+    <div id="vertControls" style="display:none">
+      <div class="row" style="margin-top:8px">
+        <button class="btn" id="setReach">📐 Set standing reach</button>
+        <button class="btn" id="setTouch">🫳 Set jump touch</button>
+      </div>
+      <div class="row" style="margin-top:8px;justify-content:center">
+        <span class="pill" id="reachChip" style="text-align:center">Reach: not set</span>
+        <span class="pill" id="touchChip" style="text-align:center">Touch: not set</span>
+      </div>
+      <div class="ht-result" id="vertResult" style="color:var(--start)">vert: —</div>
+      <button class="btn green full" id="saveVert" disabled>💾 Save vertical leap to athlete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PRINT REPORT ==================== -->
+<div id="reportView">
+  <div class="no-print">
+    <button class="btn" id="repClose">‹ Back</button>
+    <button class="btn primary" id="repPrint">🖨 Print / Save as PDF</button>
+  </div>
+  <div style="display:flex;gap:14px;align-items:flex-start">
+    <img id="repPhoto" alt="" style="display:none;width:86px;height:86px;object-fit:cover;border-radius:10px;border:1px solid #ccc;flex:0 0 auto">
+    <div style="flex:1;min-width:0">
+      <h1 id="repName">Athlete Report</h1>
+      <div class="rep-sub" id="repSub"></div>
+    </div>
+  </div>
+  <div class="rep-card"><h3>Current stats</h3><div class="statline" id="repStats"></div></div>
+  <div class="rep-card"><h3>Height progression (in)</h3><canvas class="chart" id="repChHt"></canvas></div>
+  <div class="rep-card"><h3>Weight progression (lb)</h3><canvas class="chart" id="repChWt"></canvas></div>
+  <div class="rep-card"><h3>Vertical leap progression (in)</h3><canvas class="chart" id="repChVert"></canvas></div>
+  <div id="repSpeedCharts"></div>
+  <div class="rep-card"><h3>Measurement log</h3>
+    <table><thead><tr><th>Date</th><th>Height</th><th>Weight</th></tr></thead><tbody id="repMeas"></tbody></table></div>
+  <div class="rep-card"><h3>Sprint results</h3>
+    <table><thead><tr><th>Date</th><th>Event</th><th>Time</th><th>Avg mph</th></tr></thead><tbody id="repSprints"></tbody></table></div>
+  <div class="rep-card"><h3>Throw results</h3>
+    <table><thead><tr><th>Date</th><th>Distance</th><th>Time</th><th>Ball mph</th></tr></thead><tbody id="repThrows"></tbody></table></div>
+  <div class="rep-card"><h3>Vertical leap log</h3>
+    <table><thead><tr><th>Date</th><th>Standing reach</th><th>Jump touch</th><th>Vertical</th></tr></thead><tbody id="repVerts"></tbody></table></div>
+  <div class="rep-sub" style="margin-top:10px">Generated by UpTrendAthlete.com · timing from video frame analysis · height from calibrated photo measurement</div>
+</div>
+
+<!-- ==================== NAV ==================== -->
+<nav>
+  <button data-view="roster" class="active"><span class="ic">👥</span>Athletes</button>
+  <button data-view="timer"><span class="ic">⏱</span>Timer</button>
+  <button data-view="height"><span class="ic">📏</span>Height</button>
+</nav>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const todayISO = () => new Date().toISOString().slice(0,10);
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
+const fmtDate = iso => { const [y,m,d] = iso.split('-'); return `${m}/${d}/${y.slice(2)}`; };
+
+/* ================= STORAGE (artifact storage -> localStorage -> memory) ================= */
+let memDB = null;
+const KEY = 'uptrend-db-v1', OLDKEY = 'coachlab-db-v1';
+async function loadDB(){
+  try{ if (window.storage){ const r = await window.storage.get(KEY); if (r && r.value) return JSON.parse(r.value); } }catch(e){}
+  try{ const v = localStorage.getItem(KEY); if (v) return JSON.parse(v); }catch(e){}
+  try{ const v = localStorage.getItem(OLDKEY); if (v) return JSON.parse(v); }catch(e){} // migrate CoachLab data
+  return memDB || { athletes: [] };
+}
+async function persistLocalOnly(){
+  const s = JSON.stringify(db); memDB = db;
+  try{ if (window.storage){ await window.storage.set(KEY, s); return; } }catch(e){}
+  try{ localStorage.setItem(KEY, s); }catch(e){}
+}
+async function persist(){
+  await persistLocalOnly();
+  schedulePush();
+}
+let db = { athletes: [] };
+let currentAthleteId = null;
+
+/* ================= CLOUD CONFIG ================= */
+/* Paste these from your Supabase project (Settings -> API). Leave blank = local-only. */
+const SUPABASE_URL = '';            // e.g. https://abcxyz.supabase.co
+const SUPABASE_ANON_KEY = '';       // the "anon public" key (safe to ship)
+
+let sb = null, user = null, pushTimer = null, pulling = false;
+const TIER_LIMITS = { free: 3, basic: 20, unlimited: Infinity };
+function tier(){ return (db.tier && TIER_LIMITS[db.tier] != null) ? db.tier : 'free'; }
+function athleteLimit(){ return TIER_LIMITS[tier()]; }
+
+function cloudReady(){ return !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase); }
+function initSupabase(){
+  if (!cloudReady()) return;
+  try{ sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }catch(e){ sb = null; }
+}
+async function checkSession(){
+  if (!sb) return;
+  try{
+    const { data } = await sb.auth.getSession();
+    user = data && data.session ? data.session.user : null;
+    if (user) await cloudPull();
+  }catch(e){}
+  renderAccount();
+}
+function setMsg(id, t, ok){ const el = $(id); if (el){ el.textContent = t; el.style.color = ok ? 'var(--start)' : 'var(--gold)'; } }
+
+async function doSignup(){
+  if (!sb){ setMsg('acctMsg', 'Cloud isn\'t set up in this build yet.', false); return; }
+  const email = $('acctEmail').value.trim(), pass = $('acctPass').value;
+  if (!email || pass.length < 8){ setMsg('acctMsg', 'Enter an email and an 8+ character password.', false); return; }
+  setMsg('acctMsg', 'Creating account…', true);
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
+  if (error){ setMsg('acctMsg', error.message, false); return; }
+  user = data.user;
+  if (!data.session){ setMsg('acctMsg', 'Account created — check your email to confirm, then log in.', true); return; }
+  await cloudPush(true); renderAccount();
+}
+async function doLogin(){
+  if (!sb){ setMsg('acctMsg', 'Cloud isn\'t set up in this build yet.', false); return; }
+  const email = $('acctEmail').value.trim(), pass = $('acctPass').value;
+  setMsg('acctMsg', 'Signing in…', true);
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error){ setMsg('acctMsg', error.message, false); return; }
+  user = data.user;
+  await cloudPull(); renderAccount(); renderRoster(); refreshSelectors();
+}
+async function doLogout(){
+  if (sb) await sb.auth.signOut();
+  user = null; renderAccount();
+}
+async function cloudPull(){
+  if (!sb || !user) return;
+  pulling = true;
+  try{
+    const { data, error } = await sb.from('profiles').select('data,team_name,location,tier').eq('id', user.id).maybeSingle();
+    if (!error && data){
+      if (data.data && data.data.athletes){
+        db = data.data;
+        db.athletes.forEach(a => { if (!Array.isArray(a.verts)) a.verts = []; });
+      }
+      db.team = db.team || {};
+      if (data.team_name != null) db.team.name = data.team_name;
+      if (data.location != null) db.team.location = data.location;
+      if (data.tier) db.tier = data.tier;
+      await persistLocalOnly();
+      setMsg('syncStatus', 'Restored from cloud just now.', true);
+    } else {
+      await cloudPush(true); // first login on this account
+    }
+  }catch(e){ setMsg('syncStatus', 'Could not reach cloud.', false); }
+  pulling = false;
+}
+async function cloudPush(force){
+  if (!sb || !user) return;
+  try{
+    const row = { id: user.id, data: db, team_name: (db.team && db.team.name) || null,
+                  location: (db.team && db.team.location) || null, tier: tier(), updated_at: new Date().toISOString() };
+    const { error } = await sb.from('profiles').upsert(row);
+    setMsg('syncStatus', error ? ('Sync error: ' + error.message) : ('Backed up ' + new Date().toLocaleTimeString()), !error);
+  }catch(e){ setMsg('syncStatus', 'Sync error.', false); }
+}
+function schedulePush(){
+  if (!sb || !user || pulling) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => cloudPush(), 1500);
+}
+function renderAccount(){
+  const note = $('cloudNote');
+  if (!cloudReady() && note) note.textContent = 'Cloud backup turns on once Supabase keys are added to this build. Until then your data is saved on this device — use Export below to keep a backup.';
+  $('acctLoggedOut').style.display = user ? 'none' : '';
+  $('acctLoggedIn').style.display = user ? '' : 'none';
+  if (user){
+    $('acctWho').textContent = user.email || 'you';
+    $('tierPill').textContent = tier();
+    $('teamName').value = (db.team && db.team.name) || '';
+    $('teamLoc').value = (db.team && db.team.location) || '';
+  }
+}
+
+
+/* ================= HELPERS ================= */
+const getAthlete = id => db.athletes.find(a => a.id === id);
+function ageOn(dob, iso){
+  if (!dob) return null;
+  const b = new Date(dob), d = new Date(iso || todayISO());
+  let a = d.getFullYear() - b.getFullYear();
+  if (d.getMonth() < b.getMonth() || (d.getMonth() === b.getMonth() && d.getDate() < b.getDate())) a--;
+  return a;
+}
+function inToFtIn(inches){
+  if (inches == null) return '—';
+  const ft = Math.floor(inches / 12), rem = inches - ft * 12;
+  return `${ft}'${(Math.round(rem * 10) / 10).toString().replace(/\.0$/,'')}"`;
+}
+const latest = arr => arr.length ? arr.slice().sort((a,b) => a.date.localeCompare(b.date))[arr.length-1] : null;
+const initials = n => n.trim().split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase() || '?';
+function imgToThumb(img, max = 360){
+  const w = img.naturalWidth || img.videoWidth || img.width, h = img.naturalHeight || img.videoHeight || img.height;
+  const s = Math.min(1, max / Math.max(w, h));
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(w * s)); c.height = Math.max(1, Math.round(h * s));
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.82);
+}
+function fileToThumb(file, cb){
+  const img = new Image();
+  img.onload = () => { try{ cb(imgToThumb(img)); }finally{ URL.revokeObjectURL(img.src); } };
+  img.src = URL.createObjectURL(file);
+}
+const avatarHTML = a => a.photo ? `<img src="${a.photo}" alt="">` : initials(a.name);
+function fmtTime(s){
+  if (s >= 60){ const m = Math.floor(s/60); return `${m}:${(s - m*60).toFixed(2).padStart(5,'0')}`; }
+  return s.toFixed(3);
+}
+
+/* ================= NAV ================= */
+const views = { roster: $('view-roster'), profile: $('view-profile'), timer: $('view-timer'), height: $('view-height') };
+function show(view){
+  if (view !== 'timer') document.dispatchEvent(new Event('leave-timer'));
+  Object.values(views).forEach(v => v.classList.remove('active'));
+  views[view].classList.add('active');
+  document.querySelectorAll('nav button').forEach(b =>
+    b.classList.toggle('active', b.dataset.view === (view === 'profile' ? 'roster' : view)));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => show(b.dataset.view));
+$('backToRoster').onclick = () => { renderRoster(); show('roster'); };
+
+/* ================= ROSTER ================= */
+$('addAthlete').onclick = async () => {
+  const name = $('newName').value.trim();
+  if (!name){ alert('Enter a name.'); return; }
+  if (db.athletes.length >= athleteLimit()){
+    alert(`Your ${tier()} plan covers ${athleteLimit()} athletes. Upgrade to add more — UpTrend Basic ($1.99/mo) holds 20, Unlimited ($4.99/mo) has no cap.`);
+    return;
+  }
+  db.athletes.push({ id: uid(), name, dob: $('newDob').value || null,
+    measurements: [], sprints: [], throws: [], verts: [] });
+  $('newName').value = ''; $('newDob').value = '';
+  await persist(); renderRoster(); refreshSelectors();
+};
+function renderRoster(){
+  const el = $('rosterList'); el.innerHTML = '';
+  if (!db.athletes.length){
+    el.innerHTML = '<div class="card muted">No athletes yet — add your first sprinter above.</div>'; return;
+  }
+  db.athletes.slice().sort((a,b) => a.name.localeCompare(b.name)).forEach(a => {
+    const m = latest(a.measurements);
+    const div = document.createElement('div');
+    div.className = 'athlete-item';
+    div.innerHTML = `<div class="avatar">${avatarHTML(a)}</div>
+      <div><div class="nm"></div>
+      <div class="meta">${a.dob ? 'age ' + ageOn(a.dob) : ''}${m && m.htIn ? ' · ' + inToFtIn(m.htIn) : ''}${m && m.wtLb ? ' · ' + m.wtLb + ' lb' : ''}
+      · ${a.sprints.length + a.throws.length} results</div></div><div class="chev">›</div>`;
+    div.querySelector('.nm').textContent = a.name;
+    div.onclick = () => { currentAthleteId = a.id; renderProfile(); show('profile'); };
+    el.appendChild(div);
+  });
+}
+
+/* ---- backup ---- */
+$('exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `uptrend-backup-${todayISO()}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+};
+$('importBtn').onclick = () => $('importFile').click();
+$('importFile').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = async () => {
+    try{
+      const d = JSON.parse(r.result);
+      if (!d || !Array.isArray(d.athletes)) throw 0;
+      if (!confirm(`Import ${d.athletes.length} athletes? This replaces current data.`)) return;
+      db = d; await persist(); renderRoster(); refreshSelectors();
+    }catch(_){ alert('That file isn\'t an UpTrend Athlete backup.'); }
+  };
+  r.readAsText(f); e.target.value = '';
+});
+
+/* ================= CHARTS (hand-rolled canvas) ================= */
+function drawChart(canvas, pts, opts = {}){
+  const { color = '#D8512F', dark = true, lowerBetter = false, fmt = v => v } = opts;
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth || 320, H = canvas.clientHeight || 150;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  const c = canvas.getContext('2d'); c.scale(dpr, dpr);
+  c.clearRect(0,0,W,H);
+  const fg = dark ? '#9AA0AB' : '#666', grid = dark ? '#2C3038' : '#e4e2dd';
+  c.font = '10px ui-monospace,Menlo,monospace';
+  if (!pts || pts.length === 0){
+    c.fillStyle = fg; c.textAlign = 'center'; c.fillText('no data yet', W/2, H/2); return;
+  }
+  pts = pts.slice().sort((a,b) => a.t - b.t);
+  const pad = { l: 38, r: 12, t: 12, b: 20 };
+  const xs = pts.map(p => p.t), ys = pts.map(p => p.y);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs);
+  let y0 = Math.min(...ys), y1 = Math.max(...ys);
+  if (x0 === x1){ x0 -= 1; x1 += 1; }
+  const ypad = (y1 - y0) * 0.15 || Math.abs(y1) * 0.08 || 1;
+  y0 -= ypad; y1 += ypad;
+  const X = t => pad.l + (t - x0) / (x1 - x0) * (W - pad.l - pad.r);
+  const Y = v => pad.t + (1 - (v - y0) / (y1 - y0)) * (H - pad.t - pad.b);
+  // grid + y labels
+  c.strokeStyle = grid; c.fillStyle = fg; c.textAlign = 'right'; c.lineWidth = 1;
+  for (let i = 0; i <= 3; i++){
+    const v = y0 + (y1 - y0) * i / 3, y = Y(v);
+    c.beginPath(); c.moveTo(pad.l, y); c.lineTo(W - pad.r, y); c.stroke();
+    c.fillText(fmt(v), pad.l - 5, y + 3);
+  }
+  // x labels (first + last date)
+  c.textAlign = 'left';
+  c.fillText(fmtDate(new Date(x0).toISOString().slice(0,10)), pad.l, H - 6);
+  c.textAlign = 'right';
+  c.fillText(fmtDate(new Date(x1).toISOString().slice(0,10)), W - pad.r, H - 6);
+  // line
+  c.strokeStyle = color; c.lineWidth = 2; c.beginPath();
+  pts.forEach((p,i) => i ? c.lineTo(X(p.t), Y(p.y)) : c.moveTo(X(p.t), Y(p.y)));
+  if (pts.length > 1) c.stroke();
+  // dots + last label
+  c.fillStyle = color;
+  pts.forEach(p => { c.beginPath(); c.arc(X(p.t), Y(p.y), 3.5, 0, 7); c.fill(); });
+  const lp = pts[pts.length - 1];
+  c.fillStyle = dark ? '#F2F0EA' : '#111'; c.textAlign = 'right';
+  c.fillText(fmt(lp.y), Math.min(X(lp.t), W - pad.r), Y(lp.y) - 8);
+  // trend hint
+  if (pts.length > 1){
+    const d = lp.y - pts[0].y;
+    const good = lowerBetter ? d < 0 : d > 0;
+    c.fillStyle = good ? '#3FD17F' : '#FF9A7A'; c.textAlign = 'left';
+    c.fillText(`${d > 0 ? '+' : ''}${fmt(d)}`, pad.l, pad.t);
+  }
+}
+const tOf = iso => new Date(iso + 'T12:00:00').getTime();
+
+/* ================= PROFILE ================= */
+function renderProfile(){
+  const a = getAthlete(currentAthleteId); if (!a) return;
+  $('pAvatar').innerHTML = avatarHTML(a);
+  $('pName').textContent = a.name;
+  $('pMeta').textContent = a.dob ? `Born ${fmtDate(a.dob)}` : 'No birthdate set';
+  $('pAge').textContent = a.dob ? ageOn(a.dob) : '—';
+  const m = latest(a.measurements);
+  $('pHt').textContent = m && m.htIn ? inToFtIn(m.htIn) : '—';
+  $('pWt').textContent = m && m.wtLb ? m.wtLb + 'lb' : '—';
+  const lv = latest(a.verts);
+  $('pVert').textContent = lv ? lv.vertIn + '"' : '—';
+  $('mDate').value = todayISO();
+
+  // measurement table
+  const mt = $('measTable'); mt.innerHTML = '';
+  a.measurements.slice().sort((x,y) => y.date.localeCompare(x.date)).forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${fmtDate(r.date)}</td><td>${r.htIn != null ? inToFtIn(r.htIn) + ` (${r.htIn}")` : '—'}</td>
+      <td>${r.wtLb != null ? r.wtLb + ' lb' : '—'}</td><td class="del">✕</td>`;
+    tr.querySelector('.del').onclick = async () => {
+      a.measurements.splice(a.measurements.indexOf(r), 1); await persist(); renderProfile();
+    };
+    mt.appendChild(tr);
+  });
+  // sprint table
+  const st = $('sprintTable'); st.innerHTML = '';
+  a.sprints.slice().sort((x,y) => y.date.localeCompare(x.date)).forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${fmtDate(r.date)}</td><td>${r.label}</td><td>${fmtTime(r.time)}</td>
+      <td>${r.mph.toFixed(2)}</td><td class="del">✕</td>`;
+    tr.querySelector('.del').onclick = async () => {
+      a.sprints.splice(a.sprints.indexOf(r), 1); await persist(); renderProfile();
+    };
+    st.appendChild(tr);
+  });
+  // throw table
+  const tt = $('throwTable'); tt.innerHTML = '';
+  a.throws.slice().sort((x,y) => y.date.localeCompare(x.date)).forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${fmtDate(r.date)}</td><td>${r.label}</td><td>${r.time.toFixed(3)} s</td>
+      <td>${r.mph.toFixed(1)}</td><td class="del">✕</td>`;
+    tr.querySelector('.del').onclick = async () => {
+      a.throws.splice(a.throws.indexOf(r), 1); await persist(); renderProfile();
+    };
+    tt.appendChild(tr);
+  });
+
+  // vert table
+  const vt = $('vertTable'); vt.innerHTML = '';
+  a.verts.slice().sort((x,y) => y.date.localeCompare(x.date)).forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${fmtDate(r.date)}</td><td>${inToFtIn(r.reachIn)}</td><td>${inToFtIn(r.touchIn)}</td>
+      <td>${r.vertIn}"</td><td class="del">✕</td>`;
+    tr.querySelector('.del').onclick = async () => {
+      a.verts.splice(a.verts.indexOf(r), 1); await persist(); renderProfile();
+    };
+    vt.appendChild(tr);
+  });
+
+  // charts
+  requestAnimationFrame(() => {
+    drawChart($('chVert'), a.verts.map(r => ({ t: tOf(r.date), y: r.vertIn })),
+      { color: '#3FD17F', fmt: v => v.toFixed(1) });
+    drawChart($('chHt'), a.measurements.filter(r => r.htIn != null).map(r => ({ t: tOf(r.date), y: r.htIn })),
+      { color: '#5AA7E8', fmt: v => v.toFixed(1) });
+    drawChart($('chWt'), a.measurements.filter(r => r.wtLb != null).map(r => ({ t: tOf(r.date), y: r.wtLb })),
+      { color: '#FFC766', fmt: v => v.toFixed(1) });
+    renderSpeedCharts($('speedCharts'), a, true);
+  });
+}
+function renderSpeedCharts(container, a, dark){
+  container.innerHTML = '';
+  const labels = [...new Set(a.sprints.map(s => s.label))];
+  if (!labels.length && !a.throws.length){
+    container.innerHTML = '<div class="muted">No timed results yet.</div>'; return;
+  }
+  labels.forEach(lb => {
+    const box = document.createElement('div'); box.className = dark ? 'chart-box' : 'rep-card';
+    box.innerHTML = `<div class="${dark ? 'ct' : ''}" ${dark ? '' : 'style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#666;margin-bottom:8px"'}>${lb} — time (s, lower is better)</div><canvas class="chart"></canvas>`;
+    container.appendChild(box);
+    drawChart(box.querySelector('canvas'),
+      a.sprints.filter(s => s.label === lb).map(s => ({ t: tOf(s.date), y: s.time })),
+      { color: '#D8512F', dark, lowerBetter: true, fmt: v => v.toFixed(2) });
+  });
+  if (a.throws.length){
+    const box = document.createElement('div'); box.className = dark ? 'chart-box' : 'rep-card';
+    box.innerHTML = `<div class="${dark ? 'ct' : ''}" ${dark ? '' : 'style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#666;margin-bottom:8px"'}>Throwing velocity (mph)</div><canvas class="chart"></canvas>`;
+    container.appendChild(box);
+    drawChart(box.querySelector('canvas'),
+      a.throws.map(s => ({ t: tOf(s.date), y: s.mph })),
+      { color: '#3FD17F', dark, fmt: v => v.toFixed(1) });
+  }
+}
+$('addMeas').onclick = async () => {
+  const a = getAthlete(currentAthleteId); if (!a) return;
+  const htIn = parseFloat($('mHt').value), wtLb = parseFloat($('mWt').value);
+  if (isNaN(htIn) && isNaN(wtLb)){ alert('Enter a height and/or weight.'); return; }
+  a.measurements.push({ date: $('mDate').value || todayISO(),
+    htIn: isNaN(htIn) ? null : htIn, wtLb: isNaN(wtLb) ? null : wtLb });
+  $('mHt').value = ''; $('mWt').value = '';
+  await persist(); renderProfile(); renderRoster();
+};
+$('pPhotoBtn').onclick = () => $('pPhotoInput').click();
+$('pPhotoInput').addEventListener('change', e => {
+  const f = e.target.files[0]; e.target.value = '';
+  const a = getAthlete(currentAthleteId);
+  if (!f || !f.type.startsWith('image') || !a) return;
+  fileToThumb(f, async dataURL => {
+    a.photo = dataURL; a.photoDate = todayISO();
+    await persist(); renderProfile(); renderRoster();
+  });
+});
+$('deleteAthlete').onclick = async () => {
+  const a = getAthlete(currentAthleteId); if (!a) return;
+  if (!confirm(`Delete ${a.name} and all their data? This can't be undone.`)) return;
+  db.athletes = db.athletes.filter(x => x.id !== a.id);
+  currentAthleteId = null;
+  await persist(); refreshSelectors(); renderRoster(); show('roster');
+};
+
+/* ================= ATHLETE SELECTORS ================= */
+function refreshSelectors(){
+  ['timerAthlete','htAthlete'].forEach(id => {
+    const sel = $(id), prev = sel.value;
+    sel.innerHTML = '<option value="">— pick athlete —</option>' +
+      db.athletes.slice().sort((a,b) => a.name.localeCompare(b.name))
+        .map(a => `<option value="${a.id}">${a.name.replace(/</g,'&lt;')}</option>`).join('');
+    if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+  });
+}
+
+/* ================= TIMER (sprint + throw) ================= */
+const video = $('video'), stage = $('stage'), dropHint = $('dropHint');
+const scrub = $('scrub'), frameBadge = $('frameBadge');
+const fpsIn = $('fps'), distIn = $('dist'), unitSel = $('unit');
+const board = $('board');
+let markA = null, markB = null, slow = false, mode = 'sprint', lastResult = null;
+
+const fps = () => Math.max(1, parseFloat(fpsIn.value) || 30);
+const maxFrame = () => Math.max(0, Math.floor((video.duration || 0) * fps()) - 1);
+const curFrame = () => Math.min(maxFrame(), Math.floor(video.currentTime * fps() + 1e-4));
+const seekToFrame = f => { video.currentTime = (Math.min(Math.max(f,0), maxFrame()) + 0.5) / fps(); };
+const seekFrames = n => { video.pause(); seekToFrame(curFrame() + n); };
+
+const PRESETS = {
+  sprint: [ ['40 yd dash',40,'yd'], ['10 m fly',10,'m'], ['30 m',30,'m'], ['100 m',100,'m'],
+            ['200 m',200,'m'], ['400 m',400,'m'], ['800 m',800,'m'] ],
+  throw:  [ ['10 ft gate',10,'ft'], ['15 ft gate',15,'ft'], ['20 ft gate',20,'ft'], ['46 ft (LL mound)',46,'ft'] ]
+};
+function setMode(m){
+  mode = m;
+  $('modeSprint').classList.toggle('on', m === 'sprint');
+  $('modeThrow').classList.toggle('on', m === 'throw');
+  const row = $('presetRow'); row.innerHTML = '';
+  PRESETS[m].forEach(([lb,d,u]) => {
+    const b = document.createElement('button'); b.className = 'btn'; b.textContent = lb;
+    b.onclick = () => { distIn.value = d; unitSel.value = u; compute(); };
+    row.appendChild(b);
+  });
+  if (m === 'throw'){ distIn.value = 10; unitSel.value = 'ft';
+    $('lineA').querySelector('.tag').textContent = 'A · RELEASE GATE';
+    $('lineB').querySelector('.tag').textContent = 'B · END GATE';
+    $('markA').textContent = '⏱ Mark A — ball at gate A';
+    $('markB').textContent = '🏁 Mark B — ball at gate B';
+  } else { distIn.value = 40; unitSel.value = 'yd';
+    $('lineA').querySelector('.tag').textContent = 'A · START';
+    $('lineB').querySelector('.tag').textContent = 'B · FINISH';
+    $('markA').textContent = '⏱ Mark A — first movement';
+    $('markB').textContent = '🏁 Mark B — crosses line';
+  }
+  compute();
+}
+$('modeSprint').onclick = () => setMode('sprint');
+$('modeThrow').onclick = () => setMode('throw');
+
+$('vidBtn').onclick = () => $('vidInput').click();
+$('vidInput').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f || !f.type.startsWith('video')) return;
+  video.src = URL.createObjectURL(f); video.load();
+  markA = markB = null; lastResult = null; compute();
+});
+video.addEventListener('loadedmetadata', () => {
+  dropHint.classList.add('hidden');
+  frameBadge.style.display = 'block';
+  ['lineA','lineB'].forEach(id => $(id).style.display = 'block');
+  $('lineA').style.left = '30%'; $('lineB').style.left = '70%';
+  scrub.max = maxFrame(); scrub.value = 0;
+  updateBadge();
+});
+$('back1').onclick = () => seekFrames(-1);
+$('fwd1').onclick  = () => seekFrames(1);
+$('back10').onclick = () => seekFrames(-10);
+$('fwd10').onclick  = () => seekFrames(10);
+const playBtn = $('playBtn');
+playBtn.onclick = () => video.paused ? video.play() : video.pause();
+video.addEventListener('play',  () => playBtn.textContent = '⏸');
+video.addEventListener('pause', () => playBtn.textContent = '▶');
+$('slowBtn').onclick = () => {
+  slow = !slow; video.playbackRate = slow ? 0.25 : 1;
+  $('slowBtn').style.borderColor = slow ? 'var(--track)' : '';
+  $('slowBtn').style.color = slow ? 'var(--track)' : '';
+};
+scrub.addEventListener('input', () => { video.pause(); seekToFrame(parseInt(scrub.value, 10)); });
+function updateBadge(){
+  const f = curFrame();
+  frameBadge.textContent = `frame ${f} · ${video.currentTime.toFixed(3)} s`;
+  if (document.activeElement !== scrub) scrub.value = f;
+}
+video.addEventListener('timeupdate', updateBadge);
+(function raf(){ if (!video.paused) updateBadge(); requestAnimationFrame(raf); })();
+
+document.addEventListener('keydown', e => {
+  if (['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if (!views.timer.classList.contains('active')) return;
+  if (e.key === 'ArrowLeft')  { e.preventDefault(); seekFrames(e.shiftKey ? -10 : -1); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); seekFrames(e.shiftKey ?  10 :  1); }
+  if (e.key === ' ') { e.preventDefault(); playBtn.click(); }
+  if (e.key.toLowerCase() === 'a') doMark('A');
+  if (e.key.toLowerCase() === 'b') doMark('B');
+});
+
+function makeDraggableX(el){
+  let drag = false;
+  el.addEventListener('pointerdown', e => { drag = true; el.setPointerCapture(e.pointerId); e.preventDefault(); });
+  el.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const r = stage.getBoundingClientRect();
+    el.style.left = (Math.min(0.99, Math.max(0.01, (e.clientX - r.left) / r.width)) * 100) + '%';
+  });
+  ['pointerup','pointercancel'].forEach(ev => el.addEventListener(ev, () => drag = false));
+}
+makeDraggableX($('lineA')); makeDraggableX($('lineB'));
+
+function doMark(which){
+  if (!video.src) return;
+  video.pause();
+  const f = curFrame();
+  if (which === 'A'){
+    markA = f;
+    if (markB !== null && markB <= markA) markB = null; // stale finish mark
+  } else {
+    if (markA !== null && f <= markA){
+      const w = $('warnMsg');
+      w.textContent = '⚠ That frame is before Mark A — step forward to where the runner crosses the line, then Mark B.';
+      w.style.display = 'block';
+      return;
+    }
+    markB = f;
+  }
+  compute();
+}
+function renderChips(){
+  $('chipA').textContent = markA === null ? 'A: not set' : `A · f${markA} · ${(markA/fps()).toFixed(2)}s ▸`;
+  $('chipB').textContent = markB === null ? 'B: not set' : `B · f${markB} · ${(markB/fps()).toFixed(2)}s ▸`;
+}
+$('chipA').onclick = () => { if (markA !== null){ video.pause(); seekToFrame(markA); } };
+$('chipB').onclick = () => { if (markB !== null){ video.pause(); seekToFrame(markB); } };
+$('clearMarks').onclick = () => { markA = markB = null; compute(); };
+
+/* ---- motion-scan: find first significant pixel change in a strip around a line ---- */
+function seekAwait(f){
+  return new Promise(res => {
+    let done = false;
+    const h = () => { if (done) return; done = true; video.removeEventListener('seeked', h); res(); };
+    video.addEventListener('seeked', h);
+    seekToFrame(f);
+    setTimeout(h, 500); // safety
+  });
+}
+let scanning = false;
+async function autoScan(which){
+  if (!video.src || scanning) return;
+  scanning = true; video.pause();
+  const btn = which === 'A' ? $('autoA') : $('autoB');
+  const orig = btn.textContent; btn.disabled = true;
+  try{
+    const lf = parseFloat((which === 'A' ? $('lineA') : $('lineB')).style.left) / 100;
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const sw = Math.max(8, Math.round(vw * 0.10));
+    const sx = Math.min(vw - sw, Math.max(0, Math.round(vw * lf - sw / 2)));
+    const sy = Math.round(vh * 0.12), sh = Math.round(vh * 0.76);
+    const c = document.createElement('canvas'); c.width = 32; c.height = 96;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    let prev = null; const noise = []; let found = null;
+    const f0 = curFrame(), fEnd = Math.min(maxFrame(), f0 + 300);
+    for (let f = f0; f <= fEnd; f++){
+      await seekAwait(f);
+      ctx.drawImage(video, sx, sy, sw, sh, 0, 0, 32, 96);
+      const d = ctx.getImageData(0, 0, 32, 96).data;
+      const g = new Float32Array(32 * 96);
+      for (let i = 0; i < g.length; i++){ const j = i * 4; g[i] = (d[j] + d[j+1] + d[j+2]) / 3; }
+      if (prev){
+        let sum = 0;
+        for (let i = 0; i < g.length; i++) sum += Math.abs(g[i] - prev[i]);
+        const diff = sum / g.length;
+        if (noise.length < 4) noise.push(diff);
+        else {
+          const base = noise.reduce((a,b) => a + b, 0) / noise.length;
+          if (diff > Math.max(6, base * 3.5)){ found = f; break; }
+          noise.push(diff); if (noise.length > 12) noise.shift();
+        }
+        if (f % 5 === 0) btn.textContent = `scanning f${f}…`;
+      }
+      prev = g;
+    }
+    if (found !== null){ await seekAwait(found); doMark(which); }
+    else alert('No movement detected in the next 300 frames inside the ' + (which === 'A' ? 'START' : 'FINISH') +
+      ' line strip. Park the video just before the moment (and make sure the line is on the runner\'s lane), then retry — or mark it manually.');
+  } finally {
+    btn.disabled = false; btn.textContent = orig; scanning = false;
+  }
+}
+$('autoA').onclick = () => autoScan('A');
+$('autoB').onclick = () => autoScan('B');
+$('markA').onclick = () => doMark('A');
+$('markB').onclick = () => doMark('B');
+[fpsIn, distIn, unitSel].forEach(el => el.addEventListener('input', () => {
+  if (video.duration) scrub.max = maxFrame();
+  compute();
+}));
+
+const TO_M = { m: 1, yd: 0.9144, ft: 0.3048 };
+function fmtPace(sp){ if (!isFinite(sp)) return '—'; const m = Math.floor(sp/60), s = Math.round(sp%60); return `${m}:${String(s).padStart(2,'0')}`; }
+function compute(){
+  renderChips();
+  const warn = $('warnMsg'); warn.style.display = 'none';
+  lastResult = null; $('saveResult').disabled = true;
+  const idle = () => {
+    board.classList.add('idle');
+    $('timeOut').innerHTML = '0.000<small> s</small>';
+    $('speedMain').textContent = '— mph';
+    $('ms').textContent = '— m/s'; $('kmh').textContent = '— km/h'; $('pace').textContent = '— /mi';
+    $('framesNote').textContent = `Mark frame A and frame B to get a ${mode === 'throw' ? 'ball speed' : 'result'}`;
+  };
+  if (markA === null || markB === null){ idle(); return; }
+  const frames = markB - markA;
+  if (frames <= 0){
+    idle(); warn.textContent = '⚠ Mark B (finish) is before Mark A (start). Re-mark: A at first movement, then step forward and mark B at the line.'; warn.style.display = 'block'; return;
+  }
+  const t = frames / fps();
+  const dRaw = parseFloat(distIn.value) || 0;
+  const meters = dRaw * TO_M[unitSel.value];
+  if (meters <= 0){ idle(); return; }
+  const msv = meters / t, mph = msv * 2.236936, kmh = msv * 3.6;
+  board.classList.remove('idle');
+  $('timeOut').innerHTML = `${fmtTime(t)}<small> ${t >= 60 ? 'min' : 's'}</small>`;
+  $('speedMain').textContent = `${mph.toFixed(mode === 'throw' ? 1 : 2)} mph ${mode === 'throw' ? 'ball speed' : 'avg'}`;
+  $('ms').textContent = `${msv.toFixed(2)} m/s`;
+  $('kmh').textContent = `${kmh.toFixed(2)} km/h`;
+  $('pace').textContent = mode === 'throw' ? `${frames} frame gate` : `${fmtPace(1609.344/msv)} /mi · ${fmtPace(1000/msv)} /km`;
+  $('framesNote').textContent = `${frames} frames @ ${fps()} fps · ±1 frame = ±${(1000/fps()).toFixed(1)} ms`;
+  const preset = PRESETS[mode].find(p => p[1] == dRaw && p[2] === unitSel.value);
+  lastResult = { time: t, mph, label: preset ? preset[0] : `${dRaw} ${unitSel.value}`, dist: dRaw, unit: unitSel.value };
+  $('saveResult').disabled = false;
+}
+$('saveResult').onclick = async () => {
+  const a = getAthlete($('timerAthlete').value);
+  if (!a){ alert('Pick an athlete in Setup first.'); return; }
+  if (!lastResult) return;
+  const rec = { date: $('timerDate').value || todayISO(), ...lastResult };
+  (mode === 'throw' ? a.throws : a.sprints).push(rec);
+  await persist(); renderRoster();
+  $('saveResult').textContent = '✓ Saved to ' + a.name;
+  setTimeout(() => $('saveResult').textContent = '💾 Save result to athlete', 1800);
+};
+
+/* ---- FPS auto-detect ---- */
+$('detectFps').onclick = async () => {
+  if (video.srcObject){ alert('Live mode times automatically from camera frames — fps detect is for video files.'); return; }
+  if (!video.src){ alert('Load a video first.'); return; }
+  if (!('requestVideoFrameCallback' in HTMLVideoElement.prototype)){
+    alert('Auto-detect needs Chrome/Edge/Safari. Enter fps manually.'); return;
+  }
+  const btn = $('detectFps'); btn.disabled = true; btn.textContent = '…';
+  const t0 = video.currentTime, wasRate = video.playbackRate;
+  video.playbackRate = 1;
+  const deltas = []; let last = null;
+  await new Promise(res => {
+    const cb = (_n, meta) => {
+      if (last !== null){ const d = meta.mediaTime - last; if (d > 0.0005) deltas.push(d); }
+      last = meta.mediaTime;
+      if (deltas.length >= 40){ video.pause(); res(); } else video.requestVideoFrameCallback(cb);
+    };
+    video.requestVideoFrameCallback(cb);
+    video.play().catch(() => res());
+    setTimeout(() => { video.pause(); res(); }, 4000);
+  });
+  video.playbackRate = wasRate; video.currentTime = t0;
+  btn.disabled = false; btn.textContent = 'Auto';
+  if (deltas.length < 5){ alert('Not enough frames measured — scrub earlier and retry.'); return; }
+  deltas.sort((a,b) => a - b);
+  let det = 1 / deltas[Math.floor(deltas.length / 2)];
+  for (const c of [23.976,24,25,29.97,30,48,50,59.94,60,100,119.88,120,240])
+    if (Math.abs(det - c) / c < 0.015){ det = c; break; }
+  fpsIn.value = Math.round(det * 1000) / 1000;
+  scrub.max = maxFrame(); compute();
+};
+
+
+/* ================= LIVE CAMERA TIMING ================= */
+const transportEl = document.querySelector('#view-timer .transport');
+let liveOn = false, liveStream = null, liveRec = null, liveChunks = [], liveURL = null, lvKeep = false;
+let lvState = 'idle', lvT0 = 0, lvBaseA = 0, lvBaseB = 0;
+let lvPrevA = null, lvPrevB = null, lvNoiseA = [], lvNoiseB = [];
+const lvCanvas = document.createElement('canvas'); lvCanvas.width = 32; lvCanvas.height = 96;
+const lvCtx = lvCanvas.getContext('2d', { willReadFrequently: true });
+
+function setSource(src){
+  $('srcFile').classList.toggle('on', src === 'file');
+  $('srcLive').classList.toggle('on', src === 'live');
+  transportEl.style.display = src === 'live' ? 'none' : '';
+  $('livePanel').style.display = src === 'live' ? '' : 'none';
+  $('vidBtn').disabled = src === 'live';
+  if (src === 'live') startLive(); else stopLive();
+}
+$('srcFile').onclick = () => setSource('file');
+$('srcLive').onclick = () => setSource('live');
+document.addEventListener('leave-timer', () => { if (liveOn) setSource('file'); });
+
+function stripSpec(lineEl){
+  const lf = parseFloat(lineEl.style.left) / 100;
+  const vw = video.videoWidth, vh = video.videoHeight;
+  const sw = Math.max(8, Math.round(vw * 0.10));
+  return { sx: Math.min(vw - sw, Math.max(0, Math.round(vw * lf - sw / 2))),
+           sy: Math.round(vh * 0.12), sw, sh: Math.round(vh * 0.76) };
+}
+function grabStrip(spec){
+  lvCtx.drawImage(video, spec.sx, spec.sy, spec.sw, spec.sh, 0, 0, 32, 96);
+  const d = lvCtx.getImageData(0, 0, 32, 96).data;
+  const g = new Float32Array(32 * 96);
+  for (let i = 0; i < g.length; i++){ const j = i * 4; g[i] = (d[j] + d[j+1] + d[j+2]) / 3; }
+  return g;
+}
+function diffOf(a, b){ let s = 0; for (let i = 0; i < a.length; i++) s += Math.abs(a[i] - b[i]); return s / a.length; }
+
+async function startLive(){
+  if (liveOn) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert('Camera not available in this browser. Note: camera requires HTTPS or opening the file locally in a modern browser.');
+    setSource('file'); return;
+  }
+  try{
+    liveStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 60 } },
+      audio: false });
+  }catch(e){ alert('Camera access failed: ' + e.message); setSource('file'); return; }
+  liveOn = true; lvState = 'idle';
+  video.removeAttribute('src'); video.srcObject = liveStream; video.muted = true;
+  video.play().catch(() => {});
+  dropHint.classList.add('hidden'); frameBadge.style.display = 'none';
+  ['lineA','lineB'].forEach(id => $(id).style.display = 'block');
+  if (!$('lineA').style.left){ $('lineA').style.left = '30%'; $('lineB').style.left = '70%'; }
+  $('liveClock').textContent = '0.00';
+  if (!('requestVideoFrameCallback' in HTMLVideoElement.prototype)){
+    $('liveStatus').textContent = '⚠ Live auto-timing needs Chrome/Edge/Safari. Use file mode.';
+    return;
+  }
+  $('liveStatus').textContent = 'camera on — drag the lines onto your marks, then ARM';
+  const cb = (_now, meta) => {
+    if (!liveOn) return;
+    try{ liveTick(meta); }catch(e){}
+    video.requestVideoFrameCallback(cb);
+  };
+  video.requestVideoFrameCallback(cb);
+}
+function liveTick(meta){
+  if (!video.videoWidth) return;
+  if (lvState !== 'settle' && lvState !== 'armed' && lvState !== 'running') return;
+  const gA = grabStrip(stripSpec($('lineA'))), gB = grabStrip(stripSpec($('lineB')));
+  const dA = lvPrevA ? diffOf(gA, lvPrevA) : null, dB = lvPrevB ? diffOf(gB, lvPrevB) : null;
+  lvPrevA = gA; lvPrevB = gB;
+  if (lvState === 'settle'){
+    if (dA !== null){ lvNoiseA.push(dA); lvNoiseB.push(dB); }
+    if (lvNoiseA.length >= 20){
+      lvBaseA = lvNoiseA.slice(2).reduce((a,b) => a + b, 0) / (lvNoiseA.length - 2);
+      lvBaseB = lvNoiseB.slice(2).reduce((a,b) => a + b, 0) / (lvNoiseB.length - 2);
+      lvState = 'armed';
+      $('liveStatus').textContent = 'ARMED — waiting for first movement at the GREEN line…';
+    }
+  } else if (lvState === 'armed'){
+    if (dA !== null && dA > Math.max(6, lvBaseA * 3.5)){
+      lvT0 = meta.mediaTime; lvState = 'running';
+      $('liveStatus').textContent = 'RUNNING — clock started on first movement';
+    }
+  } else if (lvState === 'running'){
+    const el = meta.mediaTime - lvT0;
+    $('liveClock').textContent = el.toFixed(2);
+    if (el > 0.3 && dB !== null && dB > Math.max(6, lvBaseB * 3.5)){
+      lvState = 'done';
+      $('liveClock').textContent = el.toFixed(2);
+      $('liveStatus').textContent = `FINISH — ${el.toFixed(2)} s · review the recording to verify`;
+      fillBoardLive(el, 'live auto-timing · precision ≈ camera frame rate');
+      stopRecorder(true);
+    }
+  }
+}
+function fillBoardLive(t, note){
+  const dRaw = parseFloat(distIn.value) || 0;
+  const meters = dRaw * TO_M[unitSel.value];
+  if (meters <= 0 || t <= 0) return;
+  const msv = meters / t, mph = msv * 2.236936;
+  board.classList.remove('idle');
+  $('timeOut').innerHTML = `${fmtTime(t)}<small> ${t >= 60 ? 'min' : 's'}</small>`;
+  $('speedMain').textContent = `${mph.toFixed(mode === 'throw' ? 1 : 2)} mph ${mode === 'throw' ? 'ball speed' : 'avg'}`;
+  $('ms').textContent = `${msv.toFixed(2)} m/s`;
+  $('kmh').textContent = `${(msv * 3.6).toFixed(2)} km/h`;
+  $('pace').textContent = mode === 'throw' ? 'live gate' : `${fmtPace(1609.344/msv)} /mi · ${fmtPace(1000/msv)} /km`;
+  $('framesNote').textContent = note;
+  const preset = PRESETS[mode].find(p => p[1] == dRaw && p[2] === unitSel.value);
+  lastResult = { time: t, mph, label: (preset ? preset[0] : `${dRaw} ${unitSel.value}`) + ' (live)', dist: dRaw, unit: unitSel.value };
+  $('saveResult').disabled = false;
+}
+$('armBtn').onclick = () => {
+  if (!liveOn){ setSource('live'); return; }
+  lvNoiseA = []; lvNoiseB = []; lvPrevA = lvPrevB = null;
+  lvState = 'settle';
+  $('liveClock').textContent = '0.00';
+  $('liveStatus').textContent = 'calibrating — keep the scene still for a second…';
+  $('reviewBtn').style.display = 'none';
+  startRecorder();
+};
+$('liveCancel').onclick = () => {
+  lvState = 'idle'; $('liveStatus').textContent = 'cancelled — ARM to go again';
+  stopRecorder(false);
+};
+function startRecorder(){
+  liveChunks = []; lvKeep = false;
+  try{
+    liveRec = new MediaRecorder(liveStream);
+    liveRec.ondataavailable = e => { if (e.data && e.data.size) liveChunks.push(e.data); };
+    liveRec.onstop = () => {
+      if (liveChunks.length && lvKeep){
+        if (liveURL) URL.revokeObjectURL(liveURL);
+        liveURL = URL.createObjectURL(new Blob(liveChunks, { type: liveRec.mimeType || 'video/webm' }));
+        $('reviewBtn').style.display = '';
+      }
+    };
+    liveRec.start();
+  }catch(e){ liveRec = null; }
+}
+function stopRecorder(keep){
+  lvKeep = keep;
+  try{ if (liveRec && liveRec.state !== 'inactive') liveRec.stop(); }catch(e){}
+}
+$('reviewBtn').onclick = () => {
+  if (!liveURL) return;
+  const u = liveURL;
+  setSource('file');
+  video.srcObject = null; video.src = u; video.load();
+  markA = markB = null; compute();
+};
+function stopLive(){
+  if (!liveOn && !liveStream) return;
+  liveOn = false; lvState = 'idle';
+  stopRecorder(lvKeep);
+  if (liveStream){ liveStream.getTracks().forEach(t => t.stop()); liveStream = null; }
+  if (video.srcObject){
+    video.srcObject = null;
+    if (!video.getAttribute('src')){
+      dropHint.classList.remove('hidden');
+      ['lineA','lineB'].forEach(id => $(id).style.display = 'none');
+    }
+  }
+  $('liveStatus').textContent = 'camera off';
+}
+
+/* ================= HEIGHT FROM PHOTO ================= */
+const photoStage = $('photoStage'), photo = $('photo'), pv = $('photoVid');
+const hLines = { floor: $('hFloor'), ref: $('hRef'), head: $('hHead') };
+let hMode = 'height', mediaIsReady = false, reachIn = null, touchIn = null;
+const PV_FPS = 30; // nudge resolution for jump videos
+
+function setHMode(m){
+  hMode = m;
+  $('hmHeight').classList.toggle('on', m === 'height');
+  $('hmVert').classList.toggle('on', m === 'vert');
+  $('hToolTitle').textContent = m === 'vert' ? 'Vertical leap from photo / video' : 'Height from photo';
+  $('hInstrHeight').style.display = m === 'vert' ? 'none' : '';
+  $('hInstrVert').style.display = m === 'vert' ? '' : 'none';
+  $('heightControls').style.display = m === 'vert' ? 'none' : '';
+  $('vertControls').style.display = m === 'vert' ? '' : 'none';
+  hLines.head.querySelector('.tag').textContent = m === 'vert' ? 'FINGERTIP' : 'TOP OF HEAD';
+  computeHeight();
+}
+$('hmHeight').onclick = () => setHMode('height');
+$('hmVert').onclick = () => setHMode('vert');
+
+$('photoBtn').onclick = () => $('photoInput').click();
+$('photoInput').addEventListener('change', e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  mediaIsReady = false;
+  if (f.type.startsWith('video')){
+    photo.style.display = 'none'; photo.removeAttribute('src');
+    pv.style.display = 'block'; pv.src = url; pv.load();
+  } else if (f.type.startsWith('image')){
+    pv.pause(); pv.removeAttribute('src'); pv.style.display = 'none';
+    photo.style.display = 'block'; photo.src = url;
+  }
+});
+function onHMediaReady(){
+  mediaIsReady = true;
+  $('photoHint').classList.add('hidden');
+  Object.values(hLines).forEach(l => l.style.display = 'block');
+  hLines.floor.style.top = '88%'; hLines.ref.style.top = '15%'; hLines.head.style.top = '35%';
+  $('vidScrubCard').style.display = pv.style.display === 'block' ? '' : 'none';
+  computeHeight();
+}
+photo.onload = onHMediaReady;
+pv.addEventListener('loadedmetadata', () => {
+  $('pvScrub').max = Math.max(1, Math.round(pv.duration * PV_FPS));
+  $('pvScrub').value = 0;
+  onHMediaReady();
+});
+$('pvScrub').addEventListener('input', () => { pv.currentTime = $('pvScrub').value / PV_FPS + 0.0005; });
+$('pvBack').onclick = () => { pv.currentTime = Math.max(0, pv.currentTime - 1 / PV_FPS); };
+$('pvFwd').onclick  = () => { pv.currentTime = Math.min(pv.duration - 0.001, pv.currentTime + 1 / PV_FPS); };
+pv.addEventListener('timeupdate', () => { $('pvScrub').value = Math.round(pv.currentTime * PV_FPS); });
+function makeDraggableY(el){
+  let drag = false;
+  el.addEventListener('pointerdown', e => { drag = true; el.setPointerCapture(e.pointerId); e.preventDefault(); });
+  el.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const r = photoStage.getBoundingClientRect();
+    el.style.top = (Math.min(0.99, Math.max(0.01, (e.clientY - r.top) / r.height)) * 100) + '%';
+    computeHeight();
+  });
+  ['pointerup','pointercancel'].forEach(ev => el.addEventListener(ev, () => { drag = false; computeHeight(); }));
+}
+Object.values(hLines).forEach(makeDraggableY);
+['refFt','refIn'].forEach(id => $(id).addEventListener('input', computeHeight));
+let lastHeightIn = null;
+function computeHeight(){
+  const out = $('htResult');
+  lastHeightIn = null; $('saveHeight').disabled = true;
+  if (!mediaIsReady){ out.textContent = '—'; updateVert(); return; }
+  const yF = parseFloat(hLines.floor.style.top), yR = parseFloat(hLines.ref.style.top), yH = parseFloat(hLines.head.style.top);
+  const refTotal = (parseFloat($('refFt').value) || 0) * 12 + (parseFloat($('refIn').value) || 0);
+  const lineName = hMode === 'vert' ? 'FINGERTIP' : 'TOP OF HEAD';
+  if (refTotal <= 0){ out.innerHTML = '<small>Enter the reference mark height</small>'; updateVert(); return; }
+  if (yR >= yF){ out.innerHTML = '<small>REF MARK must be above FLOOR</small>'; updateVert(); return; }
+  if (yH >= yF){ out.innerHTML = `<small>${lineName} must be above FLOOR</small>`; updateVert(); return; }
+  const ht = (yF - yH) / (yF - yR) * refTotal;
+  lastHeightIn = Math.round(ht * 10) / 10;
+  out.innerHTML = (hMode === 'vert' ? '<small>fingertip at </small>' : '') +
+    `${inToFtIn(lastHeightIn)} <small>· ${lastHeightIn}" · ${(lastHeightIn * 2.54).toFixed(1)} cm</small>`;
+  $('saveHeight').disabled = hMode === 'vert' || !$('htAthlete').value;
+  updateVert();
+}
+function updateVert(){
+  $('reachChip').textContent = reachIn === null ? 'Reach: not set' : `Reach: ${inToFtIn(reachIn)} (${reachIn}")`;
+  $('touchChip').textContent = touchIn === null ? 'Touch: not set' : `Touch: ${inToFtIn(touchIn)} (${touchIn}")`;
+  const vr = $('vertResult');
+  if (reachIn === null || touchIn === null){ vr.textContent = 'vert: —'; $('saveVert').disabled = true; return; }
+  const v = Math.round((touchIn - reachIn) * 10) / 10;
+  if (v <= 0){ vr.innerHTML = '<small>Touch must be higher than standing reach</small>'; $('saveVert').disabled = true; return; }
+  vr.innerHTML = `vert: ${v}" <small>· ${(v * 2.54).toFixed(1)} cm</small>`;
+  $('saveVert').disabled = !$('htAthlete').value;
+}
+$('setReach').onclick = () => {
+  if (lastHeightIn === null){ alert('Load the standing-reach photo and set the lines first.'); return; }
+  reachIn = lastHeightIn; updateVert();
+};
+$('setTouch').onclick = () => {
+  if (lastHeightIn === null){ alert('Load the jump photo/video, scrub to the peak, and set the lines first.'); return; }
+  touchIn = lastHeightIn; updateVert();
+};
+$('saveVert').onclick = async () => {
+  const a = getAthlete($('htAthlete').value);
+  if (!a || reachIn === null || touchIn === null) return;
+  const v = Math.round((touchIn - reachIn) * 10) / 10;
+  if (v <= 0) return;
+  a.verts.push({ date: $('htDate').value || todayISO(), reachIn, touchIn, vertIn: v });
+  await persist(); renderRoster();
+  $('saveVert').textContent = `✓ ${v}" saved to ${a.name}`;
+  reachIn = null; touchIn = null;
+  setTimeout(() => { $('saveVert').textContent = '💾 Save vertical leap to athlete'; updateVert(); }, 1800);
+};
+$('htAthlete').addEventListener('change', computeHeight);
+$('saveHeight').onclick = async () => {
+  const a = getAthlete($('htAthlete').value);
+  if (!a || lastHeightIn == null) return;
+  const wt = parseFloat($('htWt').value);
+  a.measurements.push({ date: $('htDate').value || todayISO(), htIn: lastHeightIn, wtLb: isNaN(wt) ? null : wt });
+  try{ const el = pv.style.display === 'block' ? pv : photo; if (mediaIsReady){ a.photo = imgToThumb(el); a.photoDate = $('htDate').value || todayISO(); } }catch(_){}
+  await persist(); renderRoster();
+  $('saveHeight').textContent = '✓ Saved to ' + a.name;
+  setTimeout(() => { $('saveHeight').textContent = '💾 Save height + weight to athlete'; }, 1800);
+};
+
+/* ================= PRINT REPORT ================= */
+const reportView = $('reportView');
+function buildReport(){
+  const a = getAthlete(currentAthleteId); if (!a) return;
+  $('repName').textContent = a.name + ' — Athlete Progress Report';
+  const rp = $('repPhoto');
+  if (a.photo){ rp.src = a.photo; rp.style.display = 'block'; } else { rp.style.display = 'none'; }
+  $('repSub').textContent = `${a.dob ? 'Born ' + fmtDate(a.dob) + ' · age ' + ageOn(a.dob) + ' · ' : ''}Report date ${fmtDate(todayISO())}`;
+  const m = latest(a.measurements);
+  $('repStats').innerHTML = `
+    <div class="stat"><div class="v">${a.dob ? ageOn(a.dob) : '—'}</div><div class="l">Age</div></div>
+    <div class="stat"><div class="v">${m && m.htIn != null ? inToFtIn(m.htIn) : '—'}</div><div class="l">Height</div></div>
+    <div class="stat"><div class="v">${m && m.wtLb != null ? m.wtLb + ' lb' : '—'}</div><div class="l">Weight</div></div>
+    <div class="stat"><div class="v">${latest(a.verts) ? latest(a.verts).vertIn + '\"' : '—'}</div><div class="l">Vert</div></div>
+    <div class="stat"><div class="v">${a.sprints.length}</div><div class="l">Sprints</div></div>
+    <div class="stat"><div class="v">${a.throws.length}</div><div class="l">Throws</div></div>`;
+  const fill = (tbody, rows) => { $(tbody).innerHTML = rows.join('') || '<tr><td colspan="4" style="color:#999">none</td></tr>'; };
+  fill('repMeas', a.measurements.slice().sort((x,y) => x.date.localeCompare(y.date)).map(r =>
+    `<tr><td>${fmtDate(r.date)}</td><td>${r.htIn != null ? inToFtIn(r.htIn) + ` (${r.htIn}")` : '—'}</td><td>${r.wtLb != null ? r.wtLb + ' lb' : '—'}</td></tr>`));
+  fill('repSprints', a.sprints.slice().sort((x,y) => x.date.localeCompare(y.date)).map(r =>
+    `<tr><td>${fmtDate(r.date)}</td><td>${r.label}</td><td>${fmtTime(r.time)} s</td><td>${r.mph.toFixed(2)}</td></tr>`));
+  fill('repThrows', a.throws.slice().sort((x,y) => x.date.localeCompare(y.date)).map(r =>
+    `<tr><td>${fmtDate(r.date)}</td><td>${r.label}</td><td>${r.time.toFixed(3)} s</td><td>${r.mph.toFixed(1)}</td></tr>`));
+  fill('repVerts', a.verts.slice().sort((x,y) => x.date.localeCompare(y.date)).map(r =>
+    `<tr><td>${fmtDate(r.date)}</td><td>${inToFtIn(r.reachIn)}</td><td>${inToFtIn(r.touchIn)}</td><td>${r.vertIn}"</td></tr>`));
+  // show report, hide app
+  document.querySelectorAll('body > header, body > nav, body > .view').forEach(el => el.style.display = 'none');
+  reportView.style.display = 'block';
+  requestAnimationFrame(() => {
+    drawChart($('repChHt'), a.measurements.filter(r => r.htIn != null).map(r => ({ t: tOf(r.date), y: r.htIn })),
+      { color: '#1F6FB5', dark: false, fmt: v => v.toFixed(1) });
+    drawChart($('repChWt'), a.measurements.filter(r => r.wtLb != null).map(r => ({ t: tOf(r.date), y: r.wtLb })),
+      { color: '#C28A1E', dark: false, fmt: v => v.toFixed(1) });
+    drawChart($('repChVert'), a.verts.map(r => ({ t: tOf(r.date), y: r.vertIn })),
+      { color: '#1F8F55', dark: false, fmt: v => v.toFixed(1) });
+    renderSpeedCharts($('repSpeedCharts'), a, false);
+  });
+}
+function closeReport(){
+  reportView.style.display = 'none';
+  document.querySelectorAll('body > header, body > nav').forEach(el => el.style.display = '');
+  document.querySelectorAll('body > .view').forEach(el => el.style.display = '');
+  show('profile'); renderProfile();
+}
+$('printBtn').onclick = buildReport;
+$('repClose').onclick = closeReport;
+$('repPrint').onclick = () => window.print();
+
+/* ================= INIT ================= */
+(async () => {
+  initSupabase();
+  db = await loadDB();
+  if (!db || !Array.isArray(db.athletes)) db = { athletes: [] };
+  db.athletes.forEach(a => { if (!Array.isArray(a.verts)) a.verts = []; });
+  if (!db.team) db.team = { name: '', location: '' };
+  $('loginBtn').onclick = doLogin;
+  $('signupBtn').onclick = doSignup;
+  $('logoutBtn').onclick = doLogout;
+  $('restoreBtn').onclick = () => cloudPull().then(() => { renderRoster(); refreshSelectors(); });
+  $('saveTeam').onclick = async () => {
+    db.team = { name: $('teamName').value.trim(), location: $('teamLoc').value.trim() };
+    await persist(); setMsg('syncStatus', 'Team info saved.', true);
+  };
+  renderAccount();
+  checkSession();
+  $('timerDate').value = todayISO();
+  $('htDate').value = todayISO();
+  setMode('sprint');
+  refreshSelectors();
+  renderRoster();
+})();
+})();
+
+</script>
+<script>
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
